@@ -1,6 +1,8 @@
 import { User } from "../models/user.model";
 import bcrypt from  "bcryptjs";
+import { profile } from "console";
 import jwt from "jsonwebtoken";
+import cloudinary from "../utils/cloudinary";
 
 
 export const register = async (req,res) => {
@@ -100,7 +102,56 @@ export const getProfile = async(req,res) => {
 };
 export const editProfile = async(req,res) => {
     try {
-        //const 
+        const userId = req.id;
+        const {bio,gender} = req.body;
+        const profilePicture = req.file;
+        let cloudResponse;
+
+        if(profilePicture){
+            const fileUri = getDataUri(profilePicture);
+            cloudResponse = await cloudinary.uploader.upload(fileUri);
+        }
+const user = await User.findById(userId);
+if(!user){
+    return res.status(401).json({
+        message:'User not found',
+        success:false
+    })
+};
+if(bio) user.bio = bio;
+if(gender) user.gender = gender;
+if(profilePicture) user.profilePicture = cloudResponse.secure_url;
+await user.save();
+
+return res.status(200).json({
+    message:'Profile updated',
+    success:true,
+    user
+});
+
+    } catch (error) {
+        console.log(error)
+    }
+};
+export const getSuggestedUsers = async (req,res) => {
+    try {
+        const suggestedUsers = await User.find({_id:{$ne:req.id}}).select("-password");
+        if(!suggestedUsers){
+            return res.status(401).json({
+                message:'Currently do not have any users',
+            })
+        };
+        return res.status(200).json({
+            success:true,
+            users:suggestedUsers
+        })
+    } catch (error) {
+        console.log(error)
+    }
+};
+export const followOrUnfollow = async(req,res) => {
+    try {
+        
     } catch (error) {
         
     }
