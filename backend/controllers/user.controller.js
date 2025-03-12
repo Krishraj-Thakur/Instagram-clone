@@ -53,7 +53,7 @@ export const login = async (req, res) => {
         }
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
-            return resizeBy.status(401).json({
+            return res.status(401).json({
                 message: "Incorrect mail or password!",
                 success: false,
             });
@@ -68,10 +68,11 @@ export const login = async (req, res) => {
             following: user.following,
             posts: user.posts
         }
-        const token = await jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: 'Id' });
-        return register.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 1 * 24 * 60 * 60 * 1000 }).json({
+        const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '1d' });
+        return res.cookie('token', token, { httpOnly: true, sameSite: 'strict', maxAge: 1 * 24 * 60 * 60 * 1000 }).json({
             message: `Welcome back ${user.username}`,
-            success: true
+            success: true,
+            user
         });
     }
     catch (error) {
@@ -91,7 +92,7 @@ export const logout = async (__, res) => {
 export const getProfile = async (req, res) => {
     try {
         const userId = req.params.id;
-        let user = await User.findById(userId);
+        let user = await User.findById(userId).select('-password');
         return res.status(200).json({
             user,
             success: true
@@ -111,7 +112,7 @@ export const editProfile = async (req, res) => {
             const fileUri = getDataUri(profilePicture); 
             cloudResponse = await cloudinary.uploader.upload(fileUri); 
         }
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).select('-password');
         if (!user) {
             return res.status(401).json({
                 message: 'User not found',
@@ -160,7 +161,7 @@ export const followOrUnfollow = async (req, res) => {
             });
         }
         const user = await User.findById(followKerneWala);
-        const targetUser = awaitUser.findById(jiskoFollowKarunga);
+        const targetUser = await User.findById(jiskoFollowKarunga);
 
         if(!user || !targetUser){
             return res.status(401).json({
@@ -169,7 +170,7 @@ export const followOrUnfollow = async (req, res) => {
             });
         }
         //i will check wether to follow or not to follow
-        const idFollowing = user.following.includes(jiskoFollowKarunga);
+        const isFollowing = user.following.includes(jiskoFollowKarunga);
         if (isFollowing) { 
             await Promise.all([//unfollow logic
                 User.updateOne({_id:followKerneWala},{$pull:{following:jiskoFollowKarunga}}),//removing from following list

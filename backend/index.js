@@ -21,6 +21,11 @@ app.get("/", (_,res) =>{
 
 app.use(express.json());
 app.use(cookieParser());
+app.use((req, res, next) => {//new
+    console.log("Incoming cookies:", req.cookies);
+    next();
+});//new
+
 app.use(urlencoded({extended:true}));
 const corsOptions = {
     origin:'http://localhost:5173',
