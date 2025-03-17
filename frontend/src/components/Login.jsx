@@ -9,9 +9,8 @@ import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
-const Signup = () => {
+const Login = () => {
     const [input, setInput] = useState({
-        username: "",
         email: "",
         password: ""
     });
@@ -23,20 +22,19 @@ const Signup = () => {
 
     const signupHandler = async (e) => {
         e.preventDefault();
-        
+        console.log(input);
         try {
             setLoading(true);
-            const res = await axios.post('http://localhost:8000/api/v1/user/register', input, {
+            const res = await axios.post('http://localhost:8000/api/v1/user/login', input, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 withCredentials: true
             });
             if (res.data.success) {
-                navigate("/")
+                navigate("/");
                 toast.success(res.data.message);
                 setInput({
-                    username: "",
                     email: "",
                     password: ""
                 });
@@ -53,19 +51,8 @@ const Signup = () => {
             <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8 '>
                 <div className='my-4'>
                     <h1 className='text-center font-bold text-xl'>LOGO</h1>
-                    <p className='text-sm text-center'>Signup to see photos and videos from your friend</p>
+                    <p className='text-sm text-center'>Login to see photos and videos from your friend</p>
 
-                </div>
-                <div>
-                    <span className=' font-medium'>Username</span>
-                    <Input
-                        type="text"
-                        name="username"
-                        value={input.username}
-                        onChange={changeEventHandler}
-                        className="focus-visible:ring-transparent my-2"
-
-                    />
                 </div>
                 <div>
                     <span className=' font-medium'>E-mail</span>
@@ -96,13 +83,13 @@ const Signup = () => {
                             Please wait
                         </Button>
                     ) : (
-                        <Button type=' submit'>Sign Up</Button>
+                        <Button type=' submit'>Login</Button>
                     )
                 }
-                
-                <span className='text-center'>Already have an account? <Link to="/login" className='text-blue-600'>Login</Link></span>
+
+                <span className='text-center'>Don't have an account? <Link to="/Signup" className='text-blue-600'>Login</Link></span>
             </form>
         </div>
     )
 }
-export default Signup
+export default Login
