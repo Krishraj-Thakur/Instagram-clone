@@ -4,7 +4,7 @@ import LeftSideBar from "./LeftSideBar";
 
 const MainLayout = (e) => {
     return (
-        <div>
+        <div className="flex h-screen w-full">
             <LeftSideBar/>
             <div>
                 <Outlet/>
