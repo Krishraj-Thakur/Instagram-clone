@@ -8,6 +8,7 @@ import CommentDialog from "./CommentDialog";
 
 const Post = () => {
     const [text, setText] = useState("");
+    const [open, setOpen] = useState(false);
 
     const changeEventHandler = (e) => {
         const inputText = e.target.value;
@@ -49,7 +50,7 @@ const Post = () => {
             <div className="flex items-center justify-between my-2">
                 <div className="flex items-center gap-3">
                     <FaRegHeart size={"22px"} className="cursor-pointer hover:text-gray-600" />
-                    <MessageCircle className="cursor-pointer hover:text-gray-600" />
+                    <MessageCircle onClick={()=> setOpen(true)} className="cursor-pointer hover:text-gray-600" />
                     <Send className="cursor-pointer hover:text-gray-600" />
                 </div>
                 <Bookmark className="cursor-pointer hover:text-gray-600" />
@@ -59,8 +60,8 @@ const Post = () => {
                 <span className="font-bold inline mr-2">Username</span>
                 caption
             </p>
-            <span>View all x comments</span>
-            <CommentDialog />
+            <span onClick={()=> setOpen(true)} className="cursor-pointer text-sm text-gray-400">View all x comments</span>
+            <CommentDialog open={open} setOpen={setOpen}/>
             <div className="flex items-center justify-between">
                 <input
                     type="text"
