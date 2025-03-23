@@ -7,6 +7,9 @@ import { readFileAsDataURL } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import useGetAllPost from "@/hooks/UseGetAllPost";
+import { setPosts } from "@/redux/postSlice";
 
 const CreatePost = ({ open, setOpen }) => {
     const imageRef = useRef();
@@ -14,6 +17,10 @@ const CreatePost = ({ open, setOpen }) => {
     const [caption, setCaption] = useState("");
     const [imagePreview, setImagePreview] = useState("");
     const [loading, setLoading] = useState(false);
+    const { user } = useSelector(store => store.auth);
+    const { posts } = useSelector(store => store.post);
+    const dispatch = useDispatch();
+
 
 
     const fileChangeHandler = async (e) => {
@@ -44,7 +51,11 @@ const CreatePost = ({ open, setOpen }) => {
                 setFile("");
                 setImagePreview("");
                 setOpen(false);
+                dispatch(setPosts([res.data.post , ...posts]));
+ // Ensure new post is at the top
+
             }
+
         } catch (error) {
             toast.error(error.response.data.message);
         } finally {
@@ -59,12 +70,12 @@ const CreatePost = ({ open, setOpen }) => {
                 </DialogHeader>
                 <div className="flex gap-3 items-center">
                     <Avatar>
-                        <AvatarImage src="" alt="img" />
-                        <AvatarFallback>CN</AvatarFallback>
+                        <AvatarImage src={user?.profilePicture} alt="img" />
+                        <AvatarFallback>PF</AvatarFallback>
                     </Avatar>
                     <div>
                         <h1 className=" font-semibold !text-xs">
-                            Username
+                            {user?.username}
                         </h1>
                         <span className="text-gray-600 font-semibold text-xs">
                             Bio here...
